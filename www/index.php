@@ -1,405 +1,69 @@
 <?php
-// Commentaire sur une seule ligne
-
 /*
-    Plusieurs lignes
+Tout le code doit se faire dans ce fichier PHP
+
+Réalisez un formulaire HTML contenant :
+- firstname
+- lastname
+- email
+- pwd
+- pwdConfirm
+
+Créer une table "user" dans la base de données, regardez le .env à la racine et faites un build de docker
+si vous n'arrivez pas à les récupérer pour qu'il les prenne en compte
+
+Lors de la validation du formulaire vous devez :
+- Nettoyer les valeurs, exemple trim sur l'email et lowercase (5 points)
+- Attention au mot de passe (3 points)
+- Attention à l'unicité de l'email (4 points)
+- Vérifier les champs sachant que le prénom et le nom sont facultatifs
+- Insérer en BDD avec PDO et des requêtes préparées si tout est OK (4 points)
+- Sinon afficher les erreurs et remettre les valeurs pertinantes dans les inputs (4 points)
+
+Le design je m'en fiche mais pas la sécurité
+
+Bonus de 3 points si vous arrivez à envoyer un mail via un compte SMTP de votre choix
+pour valider l'adresse email en bdd
+
+Pour le : 22 Octobre 2025 - 8h
+M'envoyer un lien par mail de votre repo sur y.skrzypczyk@gmail.com
+Objet du mail : TP1 - 2IW3 - Nom Prénom
+Si vous ne savez pas mettre votre code sur un repo envoyez moi une archive
 */
 
-// Les variables
-//Convention de nommage : camelCase (PascalCase, snake_case, kebab-case)
-//Anglais
-//Cohérence
-$myFirstname;
 
-//Déclaration dynamique
-//Typage dynamique
-//Types : String, Int, Bool, Float, Null
-$myFirstname = "Yves";
-$myFirstname = 12;
+try {
+    $host = 'db';
+    $dbname = 'devdb';
+    $user = 'devuser';
+    $password = 'devpass';
 
-/*
-//Pointeurs / références
-$myAge = 40;
-$yourAge = 22;
-$yourAge = &$myAge;
-$myAge = 12;
-echo $yourAge;
-
-
-//Incrémentation et la décrémentation
-$cpt = 0;
-$cpt += 1;
-$cpt = $cpt + 1;
-$cpt++; //Post incrémentation
-++$cpt; //Pré incrémentation
-
-
-$i=0;
-$i++;
-echo $i++; //1
-echo --$i; //1
-echo $i + 1; //2
-echo $i += 1; //2
-echo $i; //2
-echo $i = $i + 1; //3
-echo $i; //3
-
-
-
-//Conditions : IF
-$age = 19;
-if($age === 18){
-    echo "Tout juste majeur";
-}else if ($age>18) {
-    echo "Majeur";
-}else{
-    echo "Mineur";
+    $dsn = "pgsql:host=$host;port=5432;dbname=$dbname;";
+    $pdo = new PDO($dsn, $user, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,       // gestion des erreurs
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC  
+    ]);
+} catch (PDOException $exception) {
+     $exception->getMessage() . "<br>";
 }
-
-if($age === 18):
-    echo "Tout juste majeur";
-else :
-    echo "Mineur";
-endif;
-
-
-//Conditions : switch
-$role = "admin";
-
-switch ($role){
-    case "admin":
-        echo "Peut tout faire";
-        break;
-    case "editeur":
-        echo "Modifier les contenus";
-    case "author":
-        echo "Modifier ses contenus";
-    default:
-        echo "Consulter le site";
-        break;
-}
-
-// Condition : Match
-$food = 'cake';
-$return_value = match ($food) {
-    'apple' => 'This food is an apple',
-    'bar' => 'This food is a bar',
-    'cake' => 'This food is a cake',
-};
-
-//Condition : Ternaire
-$major = true;
-
-if($major){
-    echo "Majeur";
-}else{
-    echo "Mineur";
-}
-
-// Instruction (condition)?"vrai":"faux";
-echo ($major)?"Majeur":"Mineur";
-
-
-//Condition : Null coalescent
-echo $myFirstname??"Anonyme";
-echo (empty($myFirstname))?"Anonyme":$myFirstname;
-
-$myFirstname = "Yves";
-
-//Concaténation
-echo "Bonjour ".$myFirstname;
-echo "Bonjour $myFirstname";
-echo 'Bonjour $myFirstname';
-
-
-//Echappement des caractères
-echo 'Aujourd\'hui "c\'est" le cours de "PHP"';
-
-
-
-//Boucles :
-// While => Tant que (un nombre indeterminé d'ittération)
-
-$dice = rand(1, 6);
-$cpt = 1;
-while ($dice != 6){
-    $dice = rand(1, 6);
-    $cpt++;
-}
-echo $cpt." tentative(s)";
-
-// Do While => Fait tant que (au moins 1 ittération)
-
-$cpt = 0;
-do{
-    $dice = rand(1, 32);
-    $cpt++;
-}while ($dice != 6);
-echo $cpt." tentative(s)";
-// For => Pour (un nombre determiné d'ittération)
-for ($cpt = 0 ; $cpt <10 ; ++$cpt){
-    echo $cpt."-";
-}
-
-
-//Tableau ou array
-$students = ["Aurélien", "Thomas", "Alban", "Nil"];
-//$students = array("Aurélien", "Thomas", "Alban", "Nil");
-//echo $students; //Pas pour un tableau
-
-//Ajouter une valeur dans un tableau
-$students[12]="Mathéo";
-$students[]="Claudiu";
-
-echo "Bonjour ".$students[2];
-
-
-
-
-
-
-$student = [
-            "lastname"=>"Michel",
-            "firstname"=>"Martin",
-            "average"=>12
-            ];
-
-$student[] = 20;
-//Afficher Prénom nom a une moyenne de note
-echo $student["firstname"]." ".$student["lastname"]." a une moyenne de ".$student["average"];
-
-//Pour du debug
-echo "<pre>";
-//var_dump($students);
-print_r($student);
-echo "</pre>";
-$esgi=[
-            "IW"=>[
-                3=>[
-                    "classe 1"=>[],
-                    "classe 2"=>["Aurélien", "Thomas", "Alban", "Nil"],
-                ],
-                4=>[
-                    "classe 1"=>[],
-                    "classe 2"=>[],
-                    ],
-                5=>[
-                    "classe 1"=>[],
-                    "classe 2"=>[],
-                    ],
-            ],
-            "AL"=>[
-                3=>[
-                    "classe 1"=>[],
-                    "classe 2"=>[],
-                    ],
-                4=>[
-                    "classe 1"=>[],
-                    "classe 2"=>[],
-                ],
-                5=>[
-                    "classe 1"=>[],
-                    "classe 2"=>[],
-                ],
-            ],
-            1=>[
-                "classe 1"=>[],
-                "classe 2"=>[],
-            ],
-            2=>[
-                "classe 1"=>[],
-                "classe 2"=>[],
-            ]
-        ];
-
-
-echo "Bonjour ".$esgi["IW"][3]["classe 2"][0];
-
-
-
-$array =
-    [
-        [ ] ,
-        [
-            [
-                [
-                    [ ] ,
-                    [
-                        [
-                            [ ]
-                        ]
-                    ]
-                ] ,
-                [ ]
-            ]
-        ]
-    ];
-
-
-echo "<pre>";
-print_r($array);
-echo "</pre>";
-
-
-// Foreach => Pour chaque (TABLEAUX ou objets)
-
-$students = ["Aurélien", "Thomas", "Alban", "Nil"];
-
-$students[12]="Mathéo";
-
-echo "<ul>";
-foreach ($students as $key=>$student){
-    echo "<li>".$student." possède la clé ".$key."</li>";
-}
-echo "</ul>";
-
-*/
-
-$students = [
-    [
-        "prenom" => "Alice",
-        "nom" => "Martin",
-        "email" => "alice.martin@example.com",
-        "note1" => 14,
-        "note2" => 16,
-        "age" => 17
-    ],
-    [
-        "prenom" => "Thomas",
-        "nom" => "Dupont",
-        "email" => "thomas.dupont@example.com",
-        "note1" => 12,
-        "note2" => 15,
-        "age" => 18
-    ],
-    [
-        "prenom" => "Sophie",
-        "nom" => "Durand",
-        "email" => "sophie.durand@example.com",
-        "note1" => 17,
-        "note2" => 13,
-        "age" => 17
-    ],
-    [
-        "prenom" => "Lucas",
-        "nom" => "Petit",
-        "email" => "lucas.petit@example.com",
-        "note1" => 11,
-        "note2" => 14,
-        "age" => 16
-    ],
-    [
-        "prenom" => "Emma",
-        "nom" => "Lemoine",
-        "email" => "emma.lemoine@example.com",
-        "note1" => 15,
-        "note2" => 18,
-        "age" => 17
-    ],
-    [
-        "prenom" => "Nathan",
-        "nom" => "Moreau",
-        "email" => "nathan.moreau@example.com",
-        "note1" => 13,
-        "note2" => 12,
-        "age" => 16
-    ],
-    [
-        "prenom" => "Camille",
-        "nom" => "Laurent",
-        "email" => "camille.laurent@example.com",
-        "note1" => 16,
-        "note2" => 14,
-        "age" => 18
-    ],
-    [
-        "prenom" => "Julien",
-        "nom" => "Garcia",
-        "email" => "julien.garcia@example.com",
-        "note1" => 10,
-        "note2" => 13,
-        "age" => 17
-    ],
-    [
-        "prenom" => "Chloé",
-        "nom" => "Roux",
-        "email" => "chloe.roux@example.com",
-        "note1" => 18,
-        "note2" => 17,
-        "age" => 16
-    ],
-    [
-        "prenom" => "Antoine",
-        "nom" => "Vincent",
-        "email" => "antoine.vincent@example.com",
-        "note1" => 9,
-        "note2" => 11,
-        "age" => 18
-    ],
-    [
-        "prenom" => "Léa",
-        "nom" => "Fournier",
-        "email" => "lea.fournier@example.com",
-        "note1" => 13,
-        "note2" => 15,
-        "age" => 17
-    ],
-    [
-        "prenom" => "Maxime",
-        "nom" => "Henry",
-        "email" => "maxime.henry@example.com",
-        "note1" => 12,
-        "note2" => 14,
-        "age" => 16
-    ],
-];
-
-
-$newStudents = [];
-
-foreach ($students as $student){
-    $average = ($student["note1"]+$student["note2"])/2;
-    $average = round($average, 1)*10;
-    $newStudents[$average][]=$student;
-}
-
-krsort($newStudents);
-
 ?>
 
-<table>
-    <thead>
-    <tr>
-        <th>Rang</th>
-        <th>Nom</th>
-        <th>Prénom</th>
-        <th>Moyenne</th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php
-    $rank = 1;
-    foreach ($newStudents as $average=>$studentsWithSameAverage){
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>TP1 - Formulaire Utilisateur</title>
+</head>
+<h1>FORMULAIRE UTILISATEUR</h1>
+<body>
+<form method="POST" action="">
+    <input type="text" name="firstname" placeholder="Prénom">
+    <input type="text" name="lastname" placeholder="Nom">
+    <input type="email" name="email" placeholder="Email">
+    <input type="password" name="pwd" placeholder="Mot de passe">
+    <input type="password" name="pwdConfirm" placeholder="Confirmer mot de passe">
+    <button type="submit" name="submit">S'inscrire</button>
+</form>
 
-        foreach ($studentsWithSameAverage as $student){
-            echo "<tr>";
-            echo "<td>".$rank."</td>";
-            echo "<td>".$student["nom"]."</td>";
-            echo "<td>".$student["prenom"]."</td>";
-            echo "<td>".($average/10)."</td>";
-            echo "</tr>";
-        }
-
-        $rank++;
-    }
-
-    ?>
-    </tbody>
-</table>
-
-
-
-
-
-
-
+</body>
+</html>
