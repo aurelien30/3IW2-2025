@@ -40,30 +40,115 @@ try {
 
     $dsn = "pgsql:host=$host;port=5432;dbname=$dbname;";
     $pdo = new PDO($dsn, $user, $password, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,       // gestion des erreurs
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC  
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 } catch (PDOException $exception) {
-     $exception->getMessage() . "<br>";
+    echo "Erreur : " . $exception->getMessage();
 }
+
+$errors = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $firstname = trim($_POST['firstname'] ?? '');
+    $lastname = trim($_POST['lastname'] ?? '');
+    $email = strtolower(trim($_POST['email'] ?? ''));
+    $pwd = $_POST['pwd'] ?? '';
+    $pwdConfirm = $_POST['pwdConfirm'] ?? '';
+
+    if ($pwd === '') {
+        $errors[] = "Le mot de passe est requis.";
+    } else {
+        if (mb_strlen($pwd) < 8) {
+            $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
+        }
+        if (!preg_match('/[A-Za-z]/', $pwd)) {
+            $errors[] = "Le mot de passe doit contenir au moins une lettre.";
+        }
+        if (!preg_match('/[0-9]/', $pwd)) {
+            $errors[] = "Le mot de passe doit contenir au moins un chiffre.";
+        }
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Email invalide.";
+    if ($pwd !== $pwdConfirm) $errors[] = "Les mots de passe ne correspondent pas.";
+
+    if (empty($errors)) {
+        try {
+            $stmt = $pdo->prepare('SELECT id FROM "utilisateur" WHERE email = :email');
+            $stmt->execute([':email' => $email]);
+            if ($stmt->fetch()) {
+                $errors[] = "Cet email est déjà utilisé.";
+            }
+        } catch (Exception $e) {
+            $errors[] = "Erreur lors de la vérification de l'email en base.";
+        }
+    }
+
+    if (empty($errors)){
+        $passwordHash = password_hash ($pwd, PASSWORD_DEFAULT);
+        try{
+            $stmt = $pdo->prepare('INSERT INTO "utilisateur"(firstname, lastname, email, password) VALUES (:firstname, :lastname, :email, :password)');
+            $stmt->execute([
+            ':firstname' => $firstname,
+            ':lastname' => $lastname,
+            ':email' => $email,
+            ':password' => $passwordHash
+]);
+
+$success = "Inscription réussie !";
+
+// vider les champs du formulaire
+$old = ['firstname' => '', 'lastname' => '', 'email' => ''];
+
+        $old = ['firstname' => '', 'lastname' => '', 'email' => ''];
+        } catch (Exception $e){
+             $errors[] = "Erreur lors de l'insertion en base de données.";
+        }
+
+    }
+} 
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>TP1 - Formulaire Utilisateur</title>
-</head>
-<h1>FORMULAIRE UTILISATEUR</h1>
 <body>
-<form method="POST" action="">
-    <input type="text" name="firstname" placeholder="Prénom">
-    <input type="text" name="lastname" placeholder="Nom">
-    <input type="email" name="email" placeholder="Email">
-    <input type="password" name="pwd" placeholder="Mot de passe">
-    <input type="password" name="pwdConfirm" placeholder="Confirmer mot de passe">
-    <button type="submit" name="submit">S'inscrire</button>
-</form>
+    <h1>Formulaire Utilisateur</h1>
 
+    <?php if (!empty($success)): ?>
+    <div role="status" aria-live="polite">
+        <?= htmlspecialchars($success) ?>
+    </div>
+    <?php endif; ?>
+
+
+    <?php if (!empty($errors)): ?>
+        <div role="alert" aria-live="assertive">
+            <ul>
+                <?php foreach ($errors as $err): ?>
+                    <li><?= htmlspecialchars($err) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <form method="POST">
+        <fieldset>
+            <legend>Inscription</legend>
+            <label for="firstname">Prénom :</label>
+            <input type="text" id="firstname" name="firstname" placeholder="Prénom">
+
+            <label for="lastname">Nom :</label>
+            <input type="text" id="lastname" name="lastname" placeholder="Nom">
+
+            <label for="email">Email :</label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+
+            <label for="pwd">Mot de passe :</label>
+            <input type="password" id="pwd" name="pwd" placeholder="Mot de passe" required>
+
+            <label for="pwdConfirm">Confirmer le mot de passe :</label>
+            <input type="password" id="pwdConfirm" name="pwdConfirm" placeholder="Confirmer mot de passe" required>
+
+            <button type="submit" name="submit">S'inscrire</button>
+        </fieldset>
+    </form>
 </body>
 </html>
