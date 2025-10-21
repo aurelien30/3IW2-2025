@@ -1,0 +1,120 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.14
+-- Dumped by pg_dump version 15.4
+
+-- Started on 2025-10-21 20:22:31 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 215 (class 1259 OID 32771)
+-- Name: user; Type: TABLE; Schema: public; Owner: devuser
+--
+
+CREATE TABLE public."user" (
+    id integer NOT NULL,
+    firstname character varying(100),
+    lastname character varying(100),
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public."user" OWNER TO devuser;
+
+--
+-- TOC entry 214 (class 1259 OID 32770)
+-- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: devuser
+--
+
+CREATE SEQUENCE public.user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_id_seq OWNER TO devuser;
+
+--
+-- TOC entry 3415 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: devuser
+--
+
+ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
+
+
+--
+-- TOC entry 3260 (class 2604 OID 32774)
+-- Name: user id; Type: DEFAULT; Schema: public; Owner: devuser
+--
+
+ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
+
+
+--
+-- TOC entry 3409 (class 0 OID 32771)
+-- Dependencies: 215
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: devuser
+--
+
+COPY public."user" (id, firstname, lastname, email, password, created_at) FROM stdin;
+1	Aurelien	ASSIA	soro@gmail.com	$2y$10$scV67LEINn6IRKUAuho0zOOFpIJgIAGfP3vQi.kG9C3ncEibthVGS	2025-10-18 17:36:27.53683
+2	Aurelien	ASSIA	aurassil3003@gmail.com	$2y$10$m9E6wnxdKlSWakOe4Yy0ZeaaJiV8..X0sC/BVG.yss.kE9x9dgLw6	2025-10-21 08:56:44.663546
+3	Aurelien	ASSIA	prof@prof.com	$2y$10$Nu5W9mdOSI7nRBfQUF9jduxSSh5C8izAyr7NEn44r4nqfkAHgLcHG	2025-10-21 09:06:33.323098
+\.
+
+
+--
+-- TOC entry 3416 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: devuser
+--
+
+SELECT pg_catalog.setval('public.user_id_seq', 3, true);
+
+
+--
+-- TOC entry 3263 (class 2606 OID 32781)
+-- Name: user user_email_key; Type: CONSTRAINT; Schema: public; Owner: devuser
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_email_key UNIQUE (email);
+
+
+--
+-- TOC entry 3265 (class 2606 OID 32779)
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: devuser
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+-- Completed on 2025-10-21 20:22:31 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
