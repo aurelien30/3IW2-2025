@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('SELECT id FROM "utilisateur" WHERE email = :email');
+            $stmt = $pdo->prepare('SELECT id FROM "user" WHERE email = :email');
             $stmt->execute([':email' => $email]);
             if ($stmt->fetch()) {
                 $errors[] = "Cet email est déjà utilisé.";
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)){
         $passwordHash = password_hash ($pwd, PASSWORD_DEFAULT);
         try{
-            $stmt = $pdo->prepare('INSERT INTO "utilisateur"(firstname, lastname, email, password) VALUES (:firstname, :lastname, :email, :password)');
+            $stmt = $pdo->prepare('INSERT INTO "user"(firstname, lastname, email, password) VALUES (:firstname, :lastname, :email, :password)');
             $stmt->execute([
             ':firstname' => $firstname,
             ':lastname' => $lastname,
@@ -97,10 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $success = "Inscription réussie !";
 
-// vider les champs du formulaire
-$old = ['firstname' => '', 'lastname' => '', 'email' => ''];
-
-        $old = ['firstname' => '', 'lastname' => '', 'email' => ''];
         } catch (Exception $e){
              $errors[] = "Erreur lors de l'insertion en base de données.";
         }
@@ -108,7 +104,13 @@ $old = ['firstname' => '', 'lastname' => '', 'email' => ''];
     }
 } 
 ?>
-
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Simple Formulaire</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
 <body>
     <h1>Formulaire Utilisateur</h1>
 
